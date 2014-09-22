@@ -19,11 +19,14 @@ SOURCES += \
     main.cpp\
     mainwindow.cpp \
     glwidget.cpp \
-    facedata.cpp
+    facedata.cpp \
+    wavecalculator.cpp
 
 HEADERS += \
     mainwindow.h \
     glwidget.h \
-    facedata.h
+    facedata.h \
+    wavecalculator.h \
+    consts.h
 
 FORMS += mainwindow.ui

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+class WaveCalculator;
+
 namespace Ui {
 class MainWindow;
 }
@@ -14,11 +16,12 @@ class MainWindow : public QMainWindow {
   explicit MainWindow(QWidget *parent = 0);
   ~MainWindow();
 
-private slots:
+ private slots:
   void on_actionQuit_triggered();
 
-private:
+ private:
   Ui::MainWindow *ui;
+  WaveCalculator *calc;
 };
 
 #endif  // MAINWINDOW_H

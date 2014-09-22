@@ -1,30 +1,10 @@
 #include <GL/glu.h>
 #include <QVector3D>
 #include "glwidget.h"
+#include "facedata.h"
+#include "consts.h"
 
-GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent) {
-  float w = 100.0f / N;
-
-  // build wave surface
-  _faces = new QList<FaceData *>();
-  for (int i = 0; i < N * N; i++) {
-    _faces->append(new FaceData(
-        QVector3D(w * (i % N) - 50.0f, 0.0f, -w * (i / N) + 50.0f), w));
-  }
-
-  // gaussian distribusion
-  float meanX = 0, meanZ = 0, sigma2 = 200, maxY = 60;
-  for (int i = 0; i < N * N; i++) {
-    auto face = _faces->at(i);
-    auto vec = face->vertices;
-    for (int j = 0; j < 4; j++) {
-      float x = vec[j]->x(), z = vec[j]->z();
-      vec[j]->setY((float)(maxY * exp(-((x - meanX) * (x - meanX) +
-                                        (z - meanZ) * (z - meanZ)) /
-                                      (2.0f * sigma2))));
-    }
-  }
-}
+GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent) {}
 
 void GLWidget::initializeGL() {
   // background color
@@ -80,7 +60,7 @@ void GLWidget::paintObject() {
   glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 
   for (int i = 0; i < N * N; i++) {
-    auto face = _faces->at(i);
+    auto face = faces->at(i);
     auto v = face->vertices;
 
     glBegin(GL_POLYGON);
@@ -117,10 +97,10 @@ void GLWidget::setupProjection() {
 
 QVector3D GLWidget::calcVertexNormal(int i, int j) {
   if (i / N == 0 || i % N == 0 || i / N == N - 1 || i % N == N - 1) {
-    return _faces->at(i)->normal();
+    return faces->at(i)->normal();
   }
 
-  QVector3D n = _faces->at(i)->normal();
+  QVector3D n = faces->at(i)->normal();
 
   // faces
   /* | i+N-1 | i+N | i+N+1 |
@@ -129,24 +109,24 @@ QVector3D GLWidget::calcVertexNormal(int i, int j) {
    */
   switch (j) {
     case 0:
-      n += _faces->at(i - N - 1)->normal();
-      n += _faces->at(i - N)->normal();
-      n += _faces->at(i - 1)->normal();
+      n += faces->at(i - N - 1)->normal();
+      n += faces->at(i - N)->normal();
+      n += faces->at(i - 1)->normal();
       break;
     case 1:
-      n += _faces->at(i - N)->normal();
-      n += _faces->at(i - N + 1)->normal();
-      n += _faces->at(i + 1)->normal();
+      n += faces->at(i - N)->normal();
+      n += faces->at(i - N + 1)->normal();
+      n += faces->at(i + 1)->normal();
       break;
     case 2:
-      n += _faces->at(i + 1)->normal();
-      n += _faces->at(i + N)->normal();
-      n += _faces->at(i + N + 1)->normal();
+      n += faces->at(i + 1)->normal();
+      n += faces->at(i + N)->normal();
+      n += faces->at(i + N + 1)->normal();
       break;
     case 3:
-      n += _faces->at(i - 1)->normal();
-      n += _faces->at(i + N - 1)->normal();
-      n += _faces->at(i + N)->normal();
+      n += faces->at(i - 1)->normal();
+      n += faces->at(i + N - 1)->normal();
+      n += faces->at(i + N)->normal();
       break;
   }
 

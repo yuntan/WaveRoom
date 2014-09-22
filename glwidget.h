@@ -1,16 +1,19 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#include <memory>
 #include <QGLWidget>
-#include <QWidget>
-#include "facedata.h"
+
+class FaceData;
 
 class GLWidget : public QGLWidget {
   Q_OBJECT
 
  public:
   GLWidget(QWidget *parent = 0);
+
   bool useVertexNormal = true;
+  std::shared_ptr<QList<FaceData *>> faces;
 
  private:
   void initializeGL();
@@ -22,12 +25,7 @@ class GLWidget : public QGLWidget {
   void setupModelView();
   void setupProjection();
 
-  QVector3D calcVertexNormal(int,int);
-
-  // N x N faces on wave surface
-  const int N = 100;
-
-  QList<FaceData *> *_faces;
+  QVector3D calcVertexNormal(int, int);
 };
 
 #endif  // GLWIDGET_H

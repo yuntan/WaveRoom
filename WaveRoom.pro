@@ -4,17 +4,26 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+QMAKE_CXXFLAGS += -std=c++11
+LIBS += -lGLU
 
 TARGET = WaveRoom
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp
+SOURCES += \
+    main.cpp\
+    mainwindow.cpp \
+    glwidget.cpp \
+    facedata.cpp
 
-HEADERS  += mainwindow.h
+HEADERS += \
+    mainwindow.h \
+    glwidget.h \
+    facedata.h
 
-FORMS    += mainwindow.ui
+FORMS += mainwindow.ui

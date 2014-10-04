@@ -2,4 +2,4 @@ Wave Room
 ====
 Numerical simulation of wave equation
 
-<iframe width="560" height="315" src="//www.youtube.com/embed/xY2ziTwzfNg" frameborder="0" allowfullscreen></iframe>
+[![Wave Room](http://img.youtube.com/vi/xY2ziTwzfNg/0.jpg)](http://youtu.be/xY2ziTwzfNg)

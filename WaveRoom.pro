@@ -4,9 +4,8 @@
 #
 #-------------------------------------------------
 
-QT += core gui opengl
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui opengl widgets concurrent script
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 QMAKE_CXXFLAGS += -std=c++11
 LIBS += -lGLU
@@ -30,3 +29,5 @@ HEADERS += \
     consts.h
 
 FORMS += mainwindow.ui
+
+OTHER_FILES +=

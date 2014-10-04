@@ -36,7 +36,8 @@ void GLWidget::paintGL() {
 void GLWidget::setupLight() {
   glEnable(GL_LIGHTING);
 
-  const GLfloat lightPosition[4] = {30.0f, 100.0f, 30.0f, 1.0f};
+//  const GLfloat lightPosition[4] = {30.0f, 100.0f, 30.0f, 1.0f};
+  const GLfloat lightPosition[4] = {0.0f, 80.0f, 0.0f, 1.0f};
   const GLfloat lightDiffuse[3] = {1.0f, 1.0f, 1.0f};   // white
   const GLfloat lightSpecular[3] = {1.0f, 1.0f, 1.0f};  // white
   const GLfloat lightAmbient[3] = {0.25f, 0.25f, 0.25f};
@@ -60,21 +61,22 @@ void GLWidget::paintObject() {
   glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
 
   for (int i = 0; i < N * N; i++) {
-    auto face = faces->at(i);
-    auto v = face->vertices;
-
     glBegin(GL_POLYGON);
     {
       if (!useVertexNormal) {
-        auto n = face->normal();
+        auto n = face->rectNormals[i];
         glNormal3f(n.x(), n.y(), n.z());
       }
-      for (int j = 0; j < 4; j++) {
+
+      int lowerLeft = (i % N) + (i / N) * (N + 1);
+      for (int j :
+           {lowerLeft, lowerLeft + 1, lowerLeft + N + 2, lowerLeft + N + 1}) {
         if (useVertexNormal) {
-          auto n = calcVertexNormal(i, j);
+          auto n = face->vertexNormals[j];
           glNormal3f(n.x(), n.y(), n.z());
         }
-        glVertex3f(v[j]->x(), v[j]->y(), v[j]->z());
+        auto v = face->vertices[j];
+        glVertex3f(v.x(), v.y(), v.z());
       }
     }
     glEnd();
@@ -85,8 +87,10 @@ void GLWidget::setupModelView() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  // camera: (40, 120, 40), look: (0, 0, 0), up: (0, 1, 0)
-  gluLookAt(40.0, 100.0, 40.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+  // camera: (40, 100, 40), look: (0, 0, 0), up: (0, 1, 0)
+//  gluLookAt(40.0, 100.0, 40.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+  gluLookAt(0.0, 80.0, 80.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 }
 
 void GLWidget::setupProjection() {
@@ -95,40 +99,3 @@ void GLWidget::setupProjection() {
   gluPerspective(60.0, (double)width() / (double)height(), 1.0, 1000.0);
 }
 
-QVector3D GLWidget::calcVertexNormal(int i, int j) {
-  if (i / N == 0 || i % N == 0 || i / N == N - 1 || i % N == N - 1) {
-    return faces->at(i)->normal();
-  }
-
-  QVector3D n = faces->at(i)->normal();
-
-  // faces
-  /* | i+N-1 | i+N | i+N+1 |
-   * |  i-1  |  i  |  i+1  |
-   * | i-N-1 | i-N | i-N+1 |
-   */
-  switch (j) {
-    case 0:
-      n += faces->at(i - N - 1)->normal();
-      n += faces->at(i - N)->normal();
-      n += faces->at(i - 1)->normal();
-      break;
-    case 1:
-      n += faces->at(i - N)->normal();
-      n += faces->at(i - N + 1)->normal();
-      n += faces->at(i + 1)->normal();
-      break;
-    case 2:
-      n += faces->at(i + 1)->normal();
-      n += faces->at(i + N)->normal();
-      n += faces->at(i + N + 1)->normal();
-      break;
-    case 3:
-      n += faces->at(i - 1)->normal();
-      n += faces->at(i + N - 1)->normal();
-      n += faces->at(i + N)->normal();
-      break;
-  }
-
-  return n.normalized();
-}

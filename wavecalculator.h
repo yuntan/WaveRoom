@@ -1,32 +1,54 @@
 #ifndef WAVECALCULATOR_H
 #define WAVECALCULATOR_H
 
-#include <memory>
 #include <QObject>
+#include <QScriptValue>
+#include <QFutureWatcher>
 
-class QTimer;
+#include "consts.h"
+
 class FaceData;
 
 class WaveCalculator : public QObject {
   Q_OBJECT
- public:
-  explicit WaveCalculator(QObject *parent = 0);
-  void start();
-  void stop();
-  void reset();
+  Q_ENUMS(BC)
 
-  std::shared_ptr<QList<FaceData *>> faces;
+ public:
+  // boundary conditions
+  enum BC {
+    Periodic,   // 周期端条件
+    Dirichlet,  // 固定端条件
+    Neumann,    // 自由端条件
+  };
+
+  explicit WaveCalculator(QScriptValue ini_dist, QScriptValue ini_velo,
+                          int step, float dt, float wave_v, BC bc,
+                          QObject* parent = 0);
+  void startCalc();
+  QList<FaceData*>* result() { return _watcher->result(); }
+
+  QFutureWatcher<QList<FaceData*>*>* watcher() const { return _watcher; }
 
 signals:
-  void facesUpdated();
+  void calcProgressChanged(int max, int value);
+  void calcFinished();
 
  private:
-  void initializeWaveSurface();
-  void calc();
+  static FaceData* calcNextSurface(const FaceData* previous,
+                                   const FaceData* current, float dt,
+                                   float wave_v, BC bc);
+  static void calcRectNormals(FaceData* face);
+  static void calcVertexNormals(FaceData* face);
 
-  QTimer *timer;
-  const int INTERVAL = 16;  // 16ms
-  int step = 0;
+  QFutureWatcher<QList<FaceData*>*>* _watcher;
+
+  // variants for calculation
+  QScriptValue _ini_dist;
+  QScriptValue _ini_velo;
+  int _step;
+  float _dt;
+  float _wave_v;
+  BC _bc;
 };
 
 #endif  // WAVECALCULATOR_H

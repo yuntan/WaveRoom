@@ -1,21 +1,16 @@
+#include "consts.h"
 #include "facedata.h"
-#include <QVector3D>
 
-FaceData::FaceData(const QVector3D& lowerleft, float width, QObject* parent)
-    : QObject(parent) {
+FaceData::FaceData(float t, QObject* parent) : QObject(parent) {
+  _t = t;
+
   // set vertices
-  for (int i = 0; i < 4; i++) {
-    auto v = new QVector3D(lowerleft);
-    if (i == 1 || i == 2) {
-      v->setX(v->x() + width);
-    }
-    if (i == 2 || i == 3) {
-      v->setZ(v->z() - width);
-    }
-    vertices[i] = v;
+  for (int i = 0; i < (N + 1) * (N + 1); i++) {
+    vertices[i].setX(-SURFACE_SIDE / 2.0f + (i % (N + 1)) * RECT_SIDE);
+    vertices[i].setZ(+SURFACE_SIDE / 2.0f - (i / (N + 1)) * RECT_SIDE);
+    vertexNormals[i].setY(1.0f);
   }
-}
-
-QVector3D FaceData::normal() {
-  return QVector3D::normal(*(vertices[0]), *(vertices[1]), *(vertices[3]));
+  for (int i = 0; i < N * N; i++) {
+    rectNormals[i].setY(1.0f);
+  }
 }

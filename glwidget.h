@@ -13,7 +13,7 @@ class GLWidget : public QGLWidget {
   GLWidget(QWidget *parent = 0);
 
   bool useVertexNormal = true;
-  std::shared_ptr<QList<FaceData *>> faces;
+  FaceData *face;
 
  private:
   void initializeGL();
@@ -24,8 +24,6 @@ class GLWidget : public QGLWidget {
   void paintObject();
   void setupModelView();
   void setupProjection();
-
-  QVector3D calcVertexNormal(int, int);
 };
 
 #endif  // GLWIDGET_H
